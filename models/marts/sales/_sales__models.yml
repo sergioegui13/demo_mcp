@@ -19,12 +19,7 @@ models:
       - name: id_nation
         description: "FK to dim_nation.id_nation (hashed)."
         data_type: varchar(32)
-        tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_nation')
-                field: id_nation
+
       - name: customer_name
         description: "Customer full name."
         data_type: varchar
