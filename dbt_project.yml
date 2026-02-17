@@ -1,11 +1,11 @@
 # Name your project! Project names should contain only lowercase characters
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
-name: 'workshop_dbt'
+name: 'demo_dbt_platform'
 version: '1.0.0'
 config-version: 2
 dbt-cloud:
-    project-id: 445612
+    project-id: 445623
 
 # This setting configures which "profile" dbt uses for this project.
 profile: 'default'
@@ -39,16 +39,16 @@ models:
   +persist_docs:
     relation: true
     columns: true
-  workshop_dbt:
+  demo_mcp:
     marts:
       sales:
         +group: sales
-        +database: "workshop_{{ env_var('DBT_ENVIRONMENT') }}_gold"
+        +database: "SERGIOEGUI_{{ env_var('DBT_ENVIRONMENT') }}_GOLD_DB"
         +schema: sales
         +materialized: table
     staging:
       tpch:
-        +database: "workshop_{{ env_var('DBT_ENVIRONMENT') }}_silver"
+        +database: "SERGIOEGUI_{{ env_var('DBT_ENVIRONMENT') }}_SILVER_DB"
         +schema: tpch
         +materialized: table
 
@@ -59,7 +59,7 @@ snapshots:
     columns: true
   workshop_dbt:
     tpch:
-      +database: "workshop_{{ env_var('DBT_ENVIRONMENT') }}_silver"
+      +database: "SERGIOEGUI_{{ env_var('DBT_ENVIRONMENT') }}_SILVER_DB"
       +schema: tpch
 flags:
   require_generic_test_arguments_property: true
