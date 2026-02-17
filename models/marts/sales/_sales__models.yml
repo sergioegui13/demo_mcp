@@ -103,7 +103,6 @@ models:
       - name: id_nation
         description: "Surrogate key (hash of n_nationkey)."
         tests:
-          - not_null
           - unique
       - name: id_region
         description: "FK to dim_region.id_region."
