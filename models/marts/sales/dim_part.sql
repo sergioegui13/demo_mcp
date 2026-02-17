@@ -18,4 +18,5 @@ select
     , retail_price_usd
     , part_comment
     , convert_timezone('UTC', current_timestamp()) as staged_at_utc
+    , 1 as demo_cicd
 from stage
