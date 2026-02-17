@@ -8,11 +8,12 @@ with stage as (
 )
 
 select
-    id_nation
+    id_nation 
     , id_region
     , nation_key
     , region_key
     , nation_name
     , nation_comment
     , staged_at_utc
+    , 1 as ci
 from stage
