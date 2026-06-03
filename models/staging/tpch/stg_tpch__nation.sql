@@ -10,8 +10,8 @@ with source as (
 
 , renamed as (
     select
-        {{ dbt_utils.generate_surrogate_key(['n_nationkey']) }} as id_nation
-        , {{ dbt_utils.generate_surrogate_key(['n_regionkey']) }} as id_region
+        cast({{ dbt_utils.generate_surrogate_key(['c_custkey']) }} as varchar(32)) as id_customer
+        , cast({{ dbt_utils.generate_surrogate_key(['c_nationkey']) }} as varchar(32)) as id_nation
         , cast(n_nationkey as number) as nation_key
         , cast(n_regionkey as number) as region_key
         , trim(n_name) as nation_name

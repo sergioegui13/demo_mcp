@@ -3,7 +3,6 @@ version: 2
 models:
   - name: dim_customer
     description: "Customer dimension built from stg_tpch__customer (conformed with nation/region via hashed ids)."
-    latest_version: 2
     config:
       contract:
         enforced: true
@@ -13,7 +12,7 @@ models:
       - name: id_customer
         description: "Surrogate key (MD5 hash of customer natural key)."
         data_type: varchar(32)
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: id_nation
@@ -35,6 +34,11 @@ models:
       - name: marketing_segment
         description: "Marketing segment."
         data_type: varchar
+      - name: customer_tier
+        description: "Tier derived from account_balance_usd (gold/silver/bronze)."
+        data_type: varchar(20)
+        data_tests:
+          - not_null
       - name: customer_comment
         description: "Free-text comment."
         data_type: varchar
@@ -42,29 +46,6 @@ models:
         description: "Build timestamp (UTC)."
         data_type: timestamp_tz
 
-    versions:
-      - v: 1
-
-      - v: 2
-        config:
-          alias: dim_customer
-        columns:
-          - include: all
-          - name: customer_tier
-            description: "Tier derived from account_balance_usd (gold/silver/bronze)."
-            data_type: varchar(20)
-            tests:
-              - not_null
-
-      - v: 3
-        columns:
-          - include: all
-            exclude: [customer_tier]
-          - name: customer_category
-            description: "Renamed from v2 'customer_tier'; same derivation."
-            data_type: varchar(20)
-            tests:
-              - not_null
 
   - name: dim_part
     description: "Part dimension built from stg_tpch__part."
@@ -73,7 +54,7 @@ models:
     columns:
       - name: id_part
         description: "Surrogate key (hash of part natural key)."
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: part_name
@@ -98,15 +79,15 @@ models:
   - name: dim_nation
     description: "Nation dimension conformed with region; built from stg_tpch__nation."
     config:
-      access: private
+      access: protected
     columns:
       - name: id_nation
         description: "Surrogate key (hash of n_nationkey)."
-        tests:
+        data_tests:
           - unique
       - name: id_region
         description: "FK to dim_region.id_region."
-        tests:
+        data_tests:
           - not_null
           - relationships:
               arguments:
@@ -128,7 +109,7 @@ models:
     columns:
       - name: id_region
         description: "Surrogate key (hash of r_regionkey)."
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: region_name
@@ -143,12 +124,12 @@ models:
     columns:
       - name: id_ship_mode
         description: "Surrogate key (hash of ship_mode)."
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: ship_mode
         description: "Shipment mode label."
-        tests:
+        data_tests:
           - accepted_values:
               arguments:
                 values:
@@ -161,12 +142,12 @@ models:
     columns:
       - name: id_supplier
         description: "Surrogate key (hash of supplier natural key)."
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: id_nation
         description: "FK to dim_nation.id_nation."
-        tests:
+        data_tests:
           - not_null
           - relationships:
               arguments:
@@ -190,23 +171,23 @@ models:
     columns:
       - name: id_lineitem
         description: "Surrogate key for line item (hash of orderkey & linenumber)."
-        tests:
+        data_tests:
           - not_null
           - unique
 
       - name: id_order
         description: "Order surrogate id (hash)."
-        tests:
+        data_tests:
           - not_null
 
       - name: id_customer
         description: "FK to dim_customer.id_customer."
-        tests:
+        data_tests:
           - not_null
 
       - name: id_part
         description: "FK to dim_part.id_part."
-        tests:
+        data_tests:
           - not_null
           - relationships:
               arguments:
@@ -215,7 +196,7 @@ models:
 
       - name: id_supplier
         description: "FK to dim_supplier.id_supplier."
-        tests:
+        data_tests:
           - not_null
           - relationships:
               arguments:
@@ -224,7 +205,7 @@ models:
 
       - name: id_ship_mode
         description: "FK to dim_ship_mode.id_ship_mode."
-        tests:
+        data_tests:
           - not_null
           - relationships:
               arguments:
@@ -233,7 +214,7 @@ models:
 
       - name: order_date
         description: "Order date (DATE)."
-        tests:
+        data_tests:
           - not_null
       - name: ship_date
         description: "Ship date (DATE)."
@@ -244,14 +225,14 @@ models:
 
       - name: order_status
         description: "Order status code."
-        tests:
+        data_tests:
           - accepted_values:
               arguments:
                 values: ["F", "O", "P"]
 
       - name: is_fulfilled
         description: "True if order_status = 'F'."
-        tests:
+        data_tests:
           - accepted_values:
               arguments:
                 values: [true, false]
@@ -293,20 +274,20 @@ models:
     columns:
       - name: id_order
         description: "Surrogate order id (hash)."
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: id_customer
         description: "FK to dim_customer.id_customer."
-        tests:
+        data_tests:
           - not_null
       - name: order_date
         description: "Order date (DATE)."
-        tests:
+        data_tests:
           - not_null
       - name: lines_count
         description: "Number of line items in the order."
-        tests:
+        data_tests:
           - not_null
       - name: gross_revenue_usd
         description: "Sum of line extended prices (prediscount, pretax)."
@@ -324,13 +305,13 @@ models:
         description: "Shipping priority rank."
       - name: order_status
         description: "Order status code ('F','O','P')."
-        tests:
+        data_tests:
           - accepted_values:
               arguments:
                 values: ["F", "O", "P"]
       - name: is_fulfilled
         description: "True if order_status = 'F'."
-        tests:
+        data_tests:
           - accepted_values:
               arguments:
                 values: [true, false]

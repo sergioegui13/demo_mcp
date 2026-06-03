@@ -5,7 +5,7 @@ with source as (
 
 , renamed as (
     select
-        {{ dbt_utils.generate_surrogate_key(['r_regionkey']) }} as id_region
+        cast({{ dbt_utils.generate_surrogate_key(['r_regionkey']) }} as varchar(32))  as id_region
         , cast(r_regionkey as number) as region_key
         , trim(r_name) as region_name
         , trim(r_comment) as region_comment

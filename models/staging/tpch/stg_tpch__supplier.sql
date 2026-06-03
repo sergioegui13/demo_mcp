@@ -5,8 +5,8 @@ with source as (
 
 , renamed as (
     select
-        {{ dbt_utils.generate_surrogate_key(['s_suppkey']) }} as id_supplier
-        , {{ dbt_utils.generate_surrogate_key(['s_nationkey']) }} as id_nation
+        cast({{ dbt_utils.generate_surrogate_key(['c_custkey']) }} as varchar(32)) as id_customer
+        , cast({{ dbt_utils.generate_surrogate_key(['c_nationkey']) }} as varchar(32)) as id_nation
         , cast(s_suppkey as number) as supplier_key
         , cast(s_nationkey as number) as nation_key
         , trim(s_name) as supplier_name

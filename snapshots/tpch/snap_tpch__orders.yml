@@ -9,10 +9,10 @@ snapshots:
       strategy: timestamp
       unique_key: o_orderkey
       updated_at: loaded_at
-      invalidate_hard_deletes: true
+      hard_deletes: invalidate
       dbt_valid_to_current: TO_TIMESTAMP_TZ('9999-12-31 00:00:00 UTC', 'YYYY-MM-DD HH24:MI:SS TZD')
 
-    tests:
+    data_tests:
       - dbt_expectations.expect_table_row_count_to_be_between:
           arguments:
             min_value: 1
@@ -30,7 +30,7 @@ snapshots:
     columns:
       - name: o_orderkey
         description: "Business key of the order (from source)."
-        tests:
+        data_tests:
           - not_null
 
       - name: o_custkey
@@ -56,25 +56,106 @@ snapshots:
 
       - name: loaded_at
         description: "Source updated/load timestamp used for snapshot detection."
-        tests:
+        data_tests:
           - not_null
 
       - name: dbt_scd_id
         description: "dbt snapshot surrogate id."
-        tests:
+        data_tests:
           - not_null
           - unique
 
       - name: dbt_updated_at
         description: "Last time dbt saw this version."
-        tests:
+        data_tests:
           - not_null
 
       - name: dbt_valid_from
         description: "Record version start."
-        tests:
+        data_tests:
           - not_null
 
       - name: dbt_valid_to
         description: "Record version end (null = current)."
-        
+
+semantic_models:
+  - name: snap_tpch_orders
+    description: "Semantic model for order snapshot history at the order-version grain."
+    model: ref('snap_tpch__orders')
+
+    defaults:
+      agg_time_dimension: order_date
+    entities:
+      - name: order
+        type: primary
+        expr: o_orderkey
+      - name: order_snapshot_version
+        type: unique
+        expr: dbt_scd_id
+      - name: customer
+        type: foreign
+        expr: o_custkey
+    dimensions:
+      - name: order_date
+        type: time
+        expr: o_orderdate
+        type_params:
+          time_granularity: day
+      - name: loaded_at
+        type: time
+        expr: loaded_at
+        type_params:
+          time_granularity: second
+      - name: dbt_updated_at
+        type: time
+        expr: dbt_updated_at
+        type_params:
+          time_granularity: second
+      - name: dbt_valid_from
+        type: time
+        expr: dbt_valid_from
+        type_params:
+          time_granularity: second
+      - name: dbt_valid_to
+        type: time
+        expr: dbt_valid_to
+        type_params:
+          time_granularity: second
+      - name: order_status
+        type: categorical
+        expr: o_orderstatus
+      - name: order_priority
+        type: categorical
+        expr: o_orderpriority
+      - name: clerk
+        type: categorical
+        expr: o_clerk
+      - name: ship_priority
+        type: categorical
+        expr: o_shippriority
+    measures:
+      - name: orders
+        description: "Count of snapshot rows at the order-version grain."
+        agg: count
+        expr: 1
+
+      - name: distinct_orders
+        description: "Distinct count of business orders."
+        agg: count_distinct
+        expr: o_orderkey
+      - name: total_price_usd
+        description: "Total order price aggregated across snapshot rows."
+        agg: sum
+        expr: o_totalprice
+      - name: avg_order_price_usd
+        description: "Average order price across snapshot rows."
+        agg: average
+        expr: o_totalprice
+      - name: min_order_price_usd
+        description: "Minimum order price across snapshot rows."
+        agg: min
+        expr: o_totalprice
+      - name: max_order_price_usd
+        description: "Maximum order price across snapshot rows."
+        agg: max
+        expr: o_totalprice

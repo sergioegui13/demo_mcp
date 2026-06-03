@@ -1,3 +1,9 @@
--- select * from {{ ref('dim_customer',v=1) }}
--- select * from {{ ref('dim_customer',v=3) }} 
-select * from {{ ref('dim_customer') }}
+-- Demo de versionado para enseñar la sintaxis de refs versionados.
+-- Se deja fuera del DAG ejecutable porque este entorno falla al compilar/buildar modelos versionados.
+
+-- select * from {{ ref('dim_customer', v=1) }}
+-- select * from {{ ref('dim_customer', v=2) }}
+-- select * from {{ ref('dim_customer', v=3) }}
+
+select *
+from {{ ref('dim_customer') }}

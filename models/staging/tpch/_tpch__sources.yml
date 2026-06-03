@@ -14,23 +14,23 @@ sources:
 
       - name: customer
         description: "Customers in the TPC-H dataset"
-        tests:
+        data_tests:
           - dbt_expectations.expect_table_row_count_to_be_between:
               arguments:
                 min_value: 1
         columns:
           - name: c_custkey
             description: "Primary key"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: c_name
             description: "Customer name"
-            tests:
+            data_tests:
               - not_null
           - name: c_nationkey
             description: "Foreign key to nation"
-            tests:
+            data_tests:
               - relationships:
                   arguments:
                     to: source('tpch', 'nation')
@@ -45,24 +45,24 @@ sources:
         columns:
           - name: o_orderkey
             description: "Primary key"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: o_custkey
             description: "Foreign key to customer"
-            tests:
+            data_tests:
               - relationships:
                   arguments:
                     to: source('tpch', 'customer')
                     field: c_custkey
           - name: o_orderstatus
             description: "Order status flag"
-            tests:
+            data_tests:
               - accepted_values:
                   arguments:
                     values: ['F','O','P']
           - name: o_orderdate
-            tests:
+            data_tests:
               - not_future_date:
                   arguments:
                     allow_today: false
@@ -74,28 +74,28 @@ sources:
         columns:
           - name: l_orderkey
             description: "Foreign key to orders"
-            tests:
+            data_tests:
               - relationships:
                   arguments:
                     to: source('tpch', 'orders')
                     field: o_orderkey
           - name: l_partkey
             description: "Foreign key to part"
-            tests:
+            data_tests:
               - relationships:
                   arguments:
                     to: source('tpch', 'part')
                     field: p_partkey
           - name: l_suppkey
             description: "Foreign key to supplier"
-            tests:
+            data_tests:
               - relationships:
                   arguments:
                     to: source('tpch', 'supplier')
                     field: s_suppkey
           - name: l_quantity
             description: "Quantity ordered"
-            tests:
+            data_tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   arguments:
                     min_value: 1
@@ -108,7 +108,7 @@ sources:
         columns:
           - name: p_partkey
             description: "Primary key"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: p_type
@@ -123,12 +123,12 @@ sources:
         columns:
           - name: s_suppkey
             description: "Primary key"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: s_nationkey
             description: "Foreign key to nation"
-            tests:
+            data_tests:
               - relationships:
                   arguments:
                     to: source('tpch', 'nation')
@@ -141,14 +141,14 @@ sources:
         columns:
           - name: ps_partkey
             description: "Foreign key to part"
-            tests:
+            data_tests:
               - relationships:
                   arguments:
                     to: source('tpch', 'part')
                     field: p_partkey
           - name: ps_suppkey
             description: "Foreign key to supplier"
-            tests:
+            data_tests:
               - relationships:
                   arguments:
                     to: source('tpch', 'supplier')
@@ -161,12 +161,12 @@ sources:
         columns:
           - name: n_nationkey
             description: "Primary key"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: n_regionkey
             description: "Foreign key to region"
-            tests:
+            data_tests:
               - relationships:
                   arguments:
                     to: source('tpch', 'region')
@@ -179,7 +179,7 @@ sources:
         columns:
           - name: r_regionkey
             description: "Primary key"
-            tests:
+            data_tests:
               - not_null
               - unique
           - name: loaded_at

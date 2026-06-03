@@ -2,6 +2,7 @@
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
 name: 'demo_dbt_platform'
+
 version: '1.0.0'
 config-version: 2
 dbt-cloud:
@@ -39,7 +40,8 @@ models:
   +persist_docs:
     relation: true
     columns: true
-  demo_mcp:
+  demo_dbt_platform:
+
     marts:
       sales:
         +group: sales
@@ -57,9 +59,3 @@ snapshots:
   +persist_docs:
     relation: true
     columns: true
-  workshop_dbt:
-    tpch:
-      +database: "SERGIOEGUI_{{ env_var('DBT_ENVIRONMENT') }}_SILVER_DB"
-      +schema: tpch
-flags:
-  require_generic_test_arguments_property: true
